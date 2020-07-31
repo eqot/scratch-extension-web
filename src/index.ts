@@ -3,7 +3,9 @@ import ArgumentType from 'scratch-vm/src/extension-support/argument-type'
 import BlockType from 'scratch-vm/src/extension-support/block-type'
 import Cast from 'scratch-vm/src/util/cast'
 
-class DummyExtension {
+import icon from '@mdi/svg/svg/earth.svg'
+
+class WebExtension {
   private runtime: Runtime
 
   constructor(runtime: Runtime) {
@@ -12,23 +14,23 @@ class DummyExtension {
 
   getInfo() {
     return {
-      id: 'dummy',
-      name: 'Dummy',
-      menuIconURI: require('../assets/images/menuIcon.png'),
-      blockIconURI: require('../assets/images/blockIcon.png'),
+      id: 'web',
+      name: 'Web',
+      menuIconURI: icon,
+      blockIconURI: icon,
       color1: '#a0a0a0',
       color2: '#808080',
       color3: '#606060',
 
       blocks: [
         {
-          opcode: 'say',
-          blockType: BlockType.REPORTER,
-          text: 'say [MESSAGE]',
+          opcode: 'goto',
+          blockType: BlockType.COMMAND,
+          text: 'go to [URL]',
           arguments: {
-            MESSAGE: {
+            URL: {
               type: ArgumentType.STRING,
-              defaultValue: 'Hello, World!'
+              defaultValue: 'www.google.co.jp'
             }
           }
         }
@@ -36,12 +38,14 @@ class DummyExtension {
     }
   }
 
-  say(args: any) {
-    const message = Cast.toString(args.MESSAGE)
-    console.log(message)
+  goto(args: any) {
+    let url: string = Cast.toString(args.URL)
+    if (!url.startsWith('https://')) {
+      url = `https://${url}`
+    }
 
-    return message
+    window.location.href = url
   }
 }
 
-export default DummyExtension
+export default WebExtension
